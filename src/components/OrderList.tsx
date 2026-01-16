@@ -67,6 +67,12 @@ export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
     return QUINCE_ITEMS.find((i) => i.id === itemId)?.name ?? itemId;
   };
 
+  // Calculate totals for each item
+  const itemTotals = QUINCE_ITEMS.map((item) => {
+    const total = orders.reduce((sum, order) => sum + (order.items[item.id] || 0), 0);
+    return { ...item, total };
+  }).filter((item) => item.total > 0);
+
   if (editingOrder) {
     return (
       <div>
@@ -93,14 +99,61 @@ export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
     );
   }
 
+  const grandTotal = itemTotals.reduce((sum, item) => sum + item.total, 0);
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>All Orders ({orders.length})</CardTitle>
-        <Button onClick={exportToCSV} variant="outline">
-          Export CSV
-        </Button>
-      </CardHeader>
+    <div className="space-y-6">
+      {/* Item Quantity Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Item Quantity Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table className="table-fixed w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[60%]">Item</TableHead>
+                  <TableHead className="w-[20%] text-center">Gender</TableHead>
+                  <TableHead className="w-[20%] text-right">Qty</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {itemTotals.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-muted-foreground italic">
+                      No items ordered yet
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <>
+                    {itemTotals.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell className="text-center capitalize">{item.gender}</TableCell>
+                        <TableCell className="text-right font-semibold">{item.total}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="bg-muted/50 font-bold">
+                      <TableCell colSpan={2}>Total Items</TableCell>
+                      <TableCell className="text-right">{grandTotal}</TableCell>
+                    </TableRow>
+                  </>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* All Orders */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>All Orders ({orders.length})</CardTitle>
+          <Button onClick={exportToCSV} variant="outline">
+            Export CSV
+          </Button>
+        </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table className="table-fixed w-full min-w-[900px]">
@@ -157,5 +210,6 @@ export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
