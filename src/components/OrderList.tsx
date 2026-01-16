@@ -17,14 +17,15 @@ import { OrderForm } from './OrderForm';
 interface OrderListProps {
   orders: EmployeeOrder[];
   onRefresh: () => void;
+  loading?: boolean;
 }
 
-export function OrderList({ orders, onRefresh }: OrderListProps) {
+export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
   const [editingOrder, setEditingOrder] = useState<EmployeeOrder | null>(null);
 
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete ${name}'s order?`)) {
-      deleteOrder(id);
+      await deleteOrder(id);
       onRefresh();
     }
   };
@@ -72,13 +73,23 @@ export function OrderList({ orders, onRefresh }: OrderListProps) {
         <h2 className="text-xl font-semibold mb-4">Edit Order: {editingOrder.fullName}</h2>
         <OrderForm
           existingOrder={editingOrder}
-          onSave={() => {
+          onSave={async () => {
             setEditingOrder(null);
-            onRefresh();
+            await onRefresh();
           }}
           onCancel={() => setEditingOrder(null)}
         />
       </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-muted-foreground">
+          Loading orders...
+        </CardContent>
+      </Card>
     );
   }
 

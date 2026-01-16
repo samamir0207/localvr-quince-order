@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { EmployeeOrder } from '@/data/types';
 import { QUINCE_ITEMS, SIZES, LOCATIONS } from '@/data/types';
-import { saveOrder, generateId } from '@/data/store';
+import { saveOrder } from '@/data/store';
 
 interface OrderFormProps {
   existingOrder?: EmployeeOrder;
@@ -28,6 +28,7 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
   );
   const [tshirtSize, setTshirtSize] = useState(existingOrder?.tshirtSize ?? '');
   const [items, setItems] = useState<Record<string, number>>(existingOrder?.items ?? {});
+  const [saving, setSaving] = useState(false);
 
   const handleQuantityChange = (itemId: string, value: string) => {
     const qty = parseInt(value, 10);
@@ -40,11 +41,12 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
 
     const order: EmployeeOrder = {
-      id: existingOrder?.id ?? generateId(),
+      id: existingOrder?.id ?? '',
       fullName,
       workLocation,
       identifiedGender,
@@ -54,7 +56,8 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
       updatedAt: new Date().toISOString(),
     };
 
-    saveOrder(order);
+    await saveOrder(order);
+    setSaving(false);
     onSave();
   };
 
@@ -195,11 +198,11 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
       </Card>
 
       <div className="flex gap-4">
-        <Button type="submit" className="flex-1">
-          {existingOrder ? 'Update Order' : 'Submit Order'}
+        <Button type="submit" className="flex-1" disabled={saving}>
+          {saving ? 'Saving...' : existingOrder ? 'Update Order' : 'Submit Order'}
         </Button>
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
             Cancel
           </Button>
         )}

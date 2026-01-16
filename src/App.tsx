@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { OrderForm } from '@/components/OrderForm';
 import { OrderList } from '@/components/OrderList';
 import type { EmployeeOrder } from '@/data/types';
-import { getOrders } from '@/data/store';
+import { getOrders, seedInitialOrders } from '@/data/store';
 import logo from '@/assets/localvr-logo.png';
 
 type View = 'form' | 'list';
@@ -11,13 +11,21 @@ type View = 'form' | 'list';
 function App() {
   const [view, setView] = useState<View>('form');
   const [orders, setOrders] = useState<EmployeeOrder[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const refreshOrders = () => {
-    setOrders(getOrders());
+  const refreshOrders = async () => {
+    setLoading(true);
+    const data = await getOrders();
+    setOrders(data);
+    setLoading(false);
   };
 
   useEffect(() => {
-    refreshOrders();
+    const init = async () => {
+      await seedInitialOrders();
+      await refreshOrders();
+    };
+    init();
   }, []);
 
   return (
@@ -58,14 +66,14 @@ function App() {
               </p>
             </div>
             <OrderForm
-              onSave={() => {
-                refreshOrders();
+              onSave={async () => {
+                await refreshOrders();
                 alert('Order submitted successfully!');
               }}
             />
           </div>
         ) : (
-          <OrderList orders={orders} onRefresh={refreshOrders} />
+          <OrderList orders={orders} onRefresh={refreshOrders} loading={loading} />
         )}
       </main>
 
