@@ -137,9 +137,16 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
         <CardContent className="space-y-4">
           {mensItems.map((item) => (
             <div key={item.id} className="flex items-center gap-4">
-              <Label htmlFor={item.id} className="flex-1 text-sm">
-                {item.name}
-              </Label>
+              <div className="flex-1">
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {item.name}
+                </a>
+              </div>
               <Input
                 id={item.id}
                 type="number"
@@ -162,9 +169,16 @@ export function OrderForm({ existingOrder, onSave, onCancel }: OrderFormProps) {
         <CardContent className="space-y-4">
           {womensItems.map((item) => (
             <div key={item.id} className="flex items-center gap-4">
-              <Label htmlFor={item.id} className="flex-1 text-sm">
-                {item.name}
-              </Label>
+              <div className="flex-1">
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {item.name}
+                </a>
+              </div>
               <Input
                 id={item.id}
                 type="number"
