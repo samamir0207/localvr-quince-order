@@ -103,26 +103,26 @@ export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="table-fixed w-full min-w-[900px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Items Ordered</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[140px]">Name</TableHead>
+                <TableHead className="w-[140px]">Location</TableHead>
+                <TableHead className="w-[70px]">Gender</TableHead>
+                <TableHead className="w-[60px]">Size</TableHead>
+                <TableHead className="w-auto">Items Ordered</TableHead>
+                <TableHead className="w-[140px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="font-medium">{order.fullName}</TableCell>
-                  <TableCell>{order.workLocation}</TableCell>
+                  <TableCell className="font-medium truncate">{order.fullName}</TableCell>
+                  <TableCell className="truncate">{order.workLocation}</TableCell>
                   <TableCell>{order.identifiedGender}</TableCell>
                   <TableCell>{order.tshirtSize}</TableCell>
-                  <TableCell className="max-w-xs">
-                    <div className="text-sm text-muted-foreground">
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground truncate">
                       {Object.entries(order.items).length === 0 ? (
                         <span className="italic">No items</span>
                       ) : (
@@ -132,7 +132,7 @@ export function OrderList({ orders, onRefresh, loading }: OrderListProps) {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell>
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="outline"
